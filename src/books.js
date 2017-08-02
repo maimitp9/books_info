@@ -5,20 +5,21 @@ export default class Books extends Component{
 	propTypes:{
 		books: PropTypes.array
 	}
+
 	constructor(){
 		super();
-		this.state= {books: (this.props.books || [])}
+		this.state= {books: (this.books || [])}
 	}
+
 	onBook(book){
 		this.state.books.push(book)
 		this.setState({
 			books: this.state.books
 		});
 	}
-
   render(){
-		const books = this.state.books.map((book) =>
-			<Book title={book.title} author={book.read} />
+		const books = this.state.books.map((book,i) =>
+			<Book key={i} title={book.title} author={book.author} read={book.read} />
 		);
     return(
       <div>
@@ -41,9 +42,9 @@ export default class Books extends Component{
 }
 
 class Book extends Component {
-	constructor(){
-		super();
-		this.state = {read: true};
+	constructor(props){
+		super(props);
+		this.state = {read: this.props.read};
 	}
 	handleChange(){
 		this.setState({
@@ -54,6 +55,7 @@ class Book extends Component {
 		return(
 			<tr>
 				<td>{this.props.title}</td>
+        <td>{this.props.author}</td>
 				<td><input type="checkbox" checked={this.state.read} onChange={this.handleChange.bind(this)}/></td>
 		</tr>
 		);
@@ -66,13 +68,18 @@ class BookForm extends Component {
 	}
 	constructor(props){
 		super(props);
-		this.state = { title: '', read: false};
+		this.state = { title: '', author: '', read: false};
 	}
 	changeTitle(e){
 		this.setState({
 			title: e.target.value
 		});
 	}
+  changeAuthor(e){
+    this.setState({
+      author: e.target.value
+    });
+  }
 	changeRead(){
 		this.setState({
 			read: !this.state.read
@@ -83,21 +90,26 @@ class BookForm extends Component {
 
 		this.props.onBook({
 			title: this.state.title,
+      author: this.state.author,
 			read: this.state.read
 		});
-
 		this.setState({
 			title: '',
+      author: '',
 			read: false
 		});
 	}
 
 	render(){
 		return(
-			<form onSubmit={this.addBook}>
+			<form onSubmit={this.addBook.bind(this)}>
         <div>
           <label htmlFor='title'>Title</label>
           <div><input type='text' id='title' value={this.state.title} onChange={this.changeTitle.bind(this)} placeholder='Title' /></div>
+        </div>
+        <div>
+          <label htmlFor='author'>Author</label>
+          <div><input type='text' id='author' value={this.state.author} onChange={this.changeAuthor.bind(this)} /></div>
         </div>
         <div>
           <label htmlFor='title'>Read</label>
